@@ -1,0 +1,103 @@
+details about NVIDIA CPU:
+
+0s
+!nvidia-smi
+Wed Mar  5 12:46:23 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 550.54.15              Driver Version: 550.54.15      CUDA Version: 12.4     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |
+| N/A   59C    P8             11W /   70W |       0MiB /  15360MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+
+Use %timeit to compare the time to do a 2D Fourier transform on arrays of size 128x128, 256x256, 512x512, 1024x1024 and 2048x2048, between numpy and cupy.
+At what sizes does cupy outperform? 
+
+Matrix Size: 128x128
+NumPy FFT time (CPU):
+247 µs ± 7.61 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+CuPy FFT time (GPU):
+146 µs ± 52.8 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+----------------------------------------
+Matrix Size: 256x256
+NumPy FFT time (CPU):
+1.27 ms ± 243 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+CuPy FFT time (GPU):
+76.2 µs ± 4.54 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+----------------------------------------
+Matrix Size: 512x512
+NumPy FFT time (CPU):
+10.6 ms ± 2.24 ms per loop (mean ± std. dev. of 7 runs, 100 loops each)
+CuPy FFT time (GPU):
+252 µs ± 2.7 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+----------------------------------------
+Matrix Size: 1024x1024
+NumPy FFT time (CPU):
+34.1 ms ± 427 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+CuPy FFT time (GPU):
+199 µs ± 77.5 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+----------------------------------------
+Matrix Size: 2048x2048
+NumPy FFT time (CPU):
+235 ms ± 4.96 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+CuPy FFT time (GPU):
+4.11 ms ± 34.2 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+----------------------------------------
+[5]
+56s
+
+From the results above, it can be seen that cupy outperforms numpy dramatically after the matrix size (512x512, medium size matrix).
+And definetly outperforms it with the larger sizes, for example for M=(2048x2048), Cupy is 57 times faster!!
+
+What happens now if you set the datatype of the array to numpy.float32?
+This are the results for each of the matrices:
+
+Matrix Size: 128x128 (float32)
+NumPy FFT time (CPU) with float32:
+245 µs ± 14.4 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+CuPy FFT time (GPU) with float32:
+110 µs ± 54.7 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+----------------------------------------
+Matrix Size: 256x256 (float32)
+NumPy FFT time (CPU) with float32:
+1.15 ms ± 194 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+CuPy FFT time (GPU) with float32:
+84.5 µs ± 14.4 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+----------------------------------------
+Matrix Size: 512x512 (float32)
+NumPy FFT time (CPU) with float32:
+5.91 ms ± 89.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+CuPy FFT time (GPU) with float32:
+84.7 µs ± 15.9 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+----------------------------------------
+Matrix Size: 1024x1024 (float32)
+NumPy FFT time (CPU) with float32:
+33.8 ms ± 1.28 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+CuPy FFT time (GPU) with float32:
+230 µs ± 658 ns per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+----------------------------------------
+Matrix Size: 2048x2048 (float32)
+NumPy FFT time (CPU) with float32:
+172 ms ± 15.5 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+CuPy FFT time (GPU) with float32:
+952 µs ± 826 ns per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+----------------------------------------
+
+When using this data type, for both Numpy and Cupy the performance increases and it gets faster for Cupy when the matrix gets bigger.
+For example, when comparing M(2048x2048) Cupy is 247 times faster instead of 57 as in the previous exercise!
+
+
